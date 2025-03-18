@@ -11,4 +11,5 @@ public interface TaskService {
     TaskDto updateTask(Long taskId, TaskDto taskDto);
     void deleteTask(Long taskId);
     List<TaskDto> getAllTasksByTitle(String taskTitle);
+    TaskDto partialUpdateTask(Long taskId, TaskDto taskDto);
 }

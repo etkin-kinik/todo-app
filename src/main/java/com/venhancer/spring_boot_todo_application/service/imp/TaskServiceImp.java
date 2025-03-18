@@ -13,11 +13,13 @@ import com.venhancer.spring_boot_todo_application.mapper.TaskMapper;
 import com.venhancer.spring_boot_todo_application.repository.TaskRepository;
 import com.venhancer.spring_boot_todo_application.service.TaskService;
 
+
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class TaskServiceImp implements TaskService{
+
 
     private TaskRepository taskRepository;
 
@@ -80,5 +82,28 @@ public class TaskServiceImp implements TaskService{
     public List<TaskDto> getAllTasksByTitle(String taskTitle) {
         List<Task> tasks = taskRepository.findByTitle(taskTitle);
         return tasks.stream().map((item) -> TaskMapper.INSTANCE.mapToTaskDto(item)).collect(Collectors.toList());
+    }
+
+    @Override
+    public TaskDto partialUpdateTask(Long taskId, TaskDto updatedTask) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException("Task is not exist with the given id" + taskId));
+        if(updatedTask.getTitle() != null){
+            task.setTitle(updatedTask.getTitle());
+        }
+        if(updatedTask.getPriority() != null){
+            task.setPriority(updatedTask.getPriority());
+        }
+        if(updatedTask.isCompleted()){
+            task.setCompleted(updatedTask.isCompleted());
+            task.setCompletedDate(LocalDateTime.now());
+        } else {
+            if(task.getCompletedDate() != null){
+                task.setCompletedDate(null);
+            }
+            task.setCompleted(updatedTask.isCompleted());
+            task.setLastModifiedDate(LocalDateTime.now());
+        }
+        Task partialUpdatedTask = taskRepository.save(task);
+        return TaskMapper.INSTANCE.mapToTaskDto(partialUpdatedTask);
     }
 }

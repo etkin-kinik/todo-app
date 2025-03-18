@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,6 +57,13 @@ public class TaskController {
         TaskDto task = taskService.updateTask(taskId, updatedTask);
         return ResponseEntity.ok(task);
     }
+
+    @PatchMapping("{id}")
+    public ResponseEntity<TaskDto> partialUpdateTask(@PathVariable("id") Long taskId, @RequestBody TaskDto updatedTask){
+        TaskDto task = taskService.partialUpdateTask(taskId, updatedTask);
+        return ResponseEntity.ok(task);
+    }
+
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteTask(@PathVariable("id") Long taskId){
